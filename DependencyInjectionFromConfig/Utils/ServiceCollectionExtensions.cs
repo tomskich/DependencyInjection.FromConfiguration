@@ -20,10 +20,12 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (configuration.Exists())
             {
-                foreach (var service in configuration.Get<List<ServiceItem>>())
+                foreach (ServiceItem service in configuration.Get<List<ServiceItem>>())
                 {
                     (Type baseType, Type implementationType, Type optionsType) = GetServiceTypes(service);
-                    services.AddSingleton(baseType, implementationType);
+
+                    var serviceDescriptor = new ServiceDescriptor(baseType ?? implementationType, implementationType, service.Lifetime);
+                    services.Add(serviceDescriptor);
 
                     if (optionsType != null && service.Options?.Value != null)
                         services.Configure(optionsType, service.Options.Value);
