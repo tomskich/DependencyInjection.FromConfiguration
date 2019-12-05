@@ -70,16 +70,36 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static (Type baseType, Type implementationType, Type optionsType) GetServiceTypes(ServiceItem service)
         {
-            Type baseType = Type.GetType(service.Service)
-                ?? throw new Exception($"Failed to create the base service type from configuration (Services[].Service): {service.Service}");
-            Type implementationType = Type.GetType(service.Implementation)
-                ?? throw new Exception($"Failed to create the service type from configuration (Services[].Implementation): {service.Implementation}");
+            if (string.IsNullOrWhiteSpace(service.Implementation))
+                throw new Exception($"The {nameof(ServiceItem.Implementation)} type is not specified for one of the services in Configuration.Services");
+
+            Type baseType = null;
+            if (!string.IsNullOrWhiteSpace(service.Service))
+            {
+                baseType = Type.GetType(service.Service);
+                if (baseType == null)
+                {
+                    throw new Exception($"Failed to create the base service type from configuration " +
+                        $"[{service.Service}] in Configuration.Services[].{nameof(ServiceItem.Service)}");
+                }
+            }
+
+            Type implementationType = Type.GetType(service.Implementation);
+            if (implementationType == null)
+            {
+                throw new Exception($"Failed to create the service implementation type from configuration " +
+                    $"[{service.Implementation}] in Configuration.Services[].{nameof(ServiceItem.Implementation)}");
+            }
 
             Type optionsType = null;
             if (!string.IsNullOrWhiteSpace(service.Options?.Implementation))
             {
-                optionsType = Type.GetType(service.Options.Implementation)
-                    ?? throw new Exception($"Failed to create the type of service settings from configuration (Services[].Settings.Implementation): {service.Options.Implementation}");
+                optionsType = Type.GetType(service.Options.Implementation);
+                if (optionsType == null)
+                {
+                    throw new Exception($"Failed to create the type of service settings from configuration " +
+                        $"[{service.Options.Implementation}] in Configuration.Services[].{nameof(ServiceItem.Options)}.{nameof(ServiceItem.Options.Implementation)}");
+                }
             }
 
             return (baseType, implementationType, optionsType);
