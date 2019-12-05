@@ -12,6 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Creates service types <see cref="ServiceItem" /> according to the configuration settings and adds them to the service collection <paramref name="services"/>.
         /// Each service can have its own options <see cref="ServiceItem.Options"/>,
         /// which are added to the service collection as <see cref="IOptions{TOptions}"/> using a method call <see cref="Configure"/>.
+        /// Also adds options validation <see cref="ValidateDataAnnotations"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="configuration">Configuration section containing an array of service <see cref="ServiceItem" /> settings.</param>
@@ -28,7 +29,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.Add(serviceDescriptor);
 
                     if (optionsType != null && service.Options?.Value != null)
-                        services.Configure(optionsType, service.Options.Value);
+                    {
+                        services.Configure(optionsType, service.Options.Value)
+                            .ValidateDataAnnotations(optionsType);
+                    }
                 }
             }
             return services;
@@ -103,6 +107,20 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return (baseType, implementationType, optionsType);
+        }
+
+        /// <summary>
+        /// Adds annotations validation to the options <paramref name="optionsType"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="optionsType">The options type.</param>
+        /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+        private static IServiceCollection ValidateDataAnnotations(this IServiceCollection services, Type optionsType)
+        {
+            var validateOptionsType = typeof(IValidateOptions<>).MakeGenericType(optionsType);
+            var dataAnnotationValidateOptionsType = typeof(DataAnnotationValidateOptions<>).MakeGenericType(optionsType);
+            var dataAnnotationValidateOptions = Activator.CreateInstance(dataAnnotationValidateOptionsType, Options.Options.DefaultName);
+            return services.AddSingleton(validateOptionsType, dataAnnotationValidateOptions);
         }
     }
 }
