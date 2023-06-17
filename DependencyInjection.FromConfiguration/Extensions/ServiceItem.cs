@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace DependencyInjectionFromConfig.Utils
+namespace DependencyInjection.FromConfiguration.Extensions
 {
     public class ServiceItem
     {

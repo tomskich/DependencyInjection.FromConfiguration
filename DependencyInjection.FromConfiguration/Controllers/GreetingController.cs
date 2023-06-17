@@ -3,7 +3,7 @@ using DependencyInjectionFromConfig.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NetCoreExternalDIConfig.Controllers
+namespace DependencyInjection.FromConfiguration.Controllers
 {
     [ApiController]
     public class GreetingController : ControllerBase

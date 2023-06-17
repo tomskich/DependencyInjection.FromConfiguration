@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DependencyInjectionFromConfig.Utils;
+using DependencyInjection.FromConfiguration.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 

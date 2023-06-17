@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore;
+﻿using DependencyInjectionFromConfig;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace DependencyInjectionFromConfig
+namespace DependencyInjection.FromConfiguration
 {
     public class Program
     {
